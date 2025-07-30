@@ -103,47 +103,77 @@
           </div>
         </el-card>
       </el-col>
-
-      <!-- Hızlı İşlemler -->
+      <!-- Kullanıcı Geri Bildirimleri -->
       <el-col :xs="24" :md="8">
-        <el-card>
+        <el-card class="testimonial-card">
           <template #header>
-            <span>Hızlı İşlemler</span>
+            <div class="card-header">
+              <span>Kullanıcı Geri Bildirimleri</span>
+              <el-icon color="#409EFF"><ChatDotSquare /></el-icon>
+            </div>
           </template>
-          
-          <div class="quick-actions">
-            <el-button 
-              type="primary" 
-              :icon="Plus" 
-              @click="$router.push('/kitaplar')"
-              style="width: 100%; margin-bottom: 10px;"
-            >
-              Yeni Kitap Ekle
-            </el-button>
-            
-            <el-button 
-              type="success" 
-              :icon="RefreshRight" 
-              @click="$router.push('/odunc')"
-              style="width: 100%; margin-bottom: 10px;"
-            >
-              Ödünç Ver
-            </el-button>
-            
-            <el-button 
-              type="warning" 
-              :icon="UserFilled" 
-              @click="$router.push('/kullanicilar')"
-              style="width: 100%;"
-            >
-              Kullanıcı Ekle
-            </el-button>
+
+          <div class="testimonial-content">
+            <div class="testimonial-item">
+              <div class="testimonial-text">
+                <el-icon class="quote-icon"><ChatLineRound /></el-icon>
+                <p>"Kütüphane sistemi, kitaplarımı yönetmemi çok kolaylaştırdı! Artık tüm koleksiyonuma kolayca erişebiliyorum."</p>
+              </div>
+              <div class="testimonial-author">
+                <el-avatar :size="32" class="author-avatar">A</el-avatar>
+                <div class="author-info">
+                  <strong>Ahmet P.</strong>
+                  <small>Öğretmen</small>
+                </div>
+                <div class="rating">
+                  <el-rate v-model="testimonialRatings.user1" disabled show-score size="small" />
+                </div>
+              </div>
+            </div>
+
+            <el-divider />
+
+            <div class="testimonial-item">
+              <div class="testimonial-text">
+                <el-icon class="quote-icon"><ChatLineRound /></el-icon>
+                <p>"Kitap arama ve filtreleme özellikleri gerçekten harika. İstediğim kitabı saniyeler içinde bulabiliyorum."</p>
+              </div>
+              <div class="testimonial-author">
+                <el-avatar :size="32" class="author-avatar">B</el-avatar>
+                <div class="author-info">
+                  <strong>Büşra K.</strong>
+                  <small>Kütüphane Görevlisi</small>
+                </div>
+                <div class="rating">
+                  <el-rate v-model="testimonialRatings.user2" disabled show-score size="small" />
+                </div>
+              </div>
+            </div>
+
+            <el-divider />
+
+            <div class="testimonial-item">
+              <div class="testimonial-text">
+                <el-icon class="quote-icon"><ChatLineRound /></el-icon>
+                <p>"Ödünç alma ve iade işlemleri çok pratik. Sistem sayesinde hiç kitap kaybetmedim!"</p>
+              </div>
+              <div class="testimonial-author">
+                <el-avatar :size="32" class="author-avatar">C</el-avatar>
+                <div class="author-info">
+                  <strong>Cem Y.</strong>
+                  <small>Araştırmacı</small>
+                </div>
+                <div class="rating">
+                  <el-rate v-model="testimonialRatings.user3" disabled show-score size="small" />
+                </div>
+              </div>
+            </div>
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- Trend Analizi -->
+
     <el-row :gutter="20" style="margin-top: 20px;" v-if="trends.length > 0">
       <el-col :span="24">
         <el-card>
@@ -177,7 +207,7 @@
 </template>
 
 <script>
-import { Reading, User, RefreshRight, Warning, Plus, UserFilled } from '@element-plus/icons-vue'
+import { Reading, User, RefreshRight, Warning, Plus, UserFilled, ChatDotSquare, ChatLineRound } from '@element-plus/icons-vue'
 import { dashboardService } from '@/services/api'
 
 export default {
@@ -188,7 +218,9 @@ export default {
     RefreshRight,
     Warning,
     Plus,
-    UserFilled
+    UserFilled,
+    ChatDotSquare,
+    ChatLineRound
   },
   data() {
     return {
@@ -196,7 +228,12 @@ export default {
       popularBooks: [],
       trends: [],
       isLoading: false,
-      error: null
+      error: null,
+      testimonialRatings: {
+        user1: 5,
+        user2: 5,
+        user3: 4
+      }
     }
   },
   async created() {
@@ -360,5 +397,80 @@ export default {
 
 .loan-count {
   color: #E6A23C;
+}
+
+/* Testimonial Styles */
+.testimonial-card {
+  height: 100%;
+}
+
+.testimonial-content {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.testimonial-item {
+  margin: 16px 0;
+}
+
+.testimonial-text {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.quote-icon {
+  position: absolute;
+  top: -2px;
+  left: -8px;
+  color: #409EFF;
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+.testimonial-text p {
+  margin: 0;
+  padding-left: 16px;
+  font-style: italic;
+  color: #606266;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 16px;
+}
+
+.author-avatar {
+  background: linear-gradient(135deg, #409EFF, #67C23A);
+  color: white;
+  font-weight: bold;
+}
+
+.author-info {
+  flex: 1;
+}
+
+.author-info strong {
+  display: block;
+  color: #303133;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.author-info small {
+  color: #909399;
+  font-size: 12px;
+}
+
+.rating {
+  margin-left: auto;
+}
+
+.testimonial-content .el-divider {
+  margin: 16px 0;
+  opacity: 0.3;
 }
 </style>

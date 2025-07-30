@@ -118,7 +118,7 @@ builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 // Build the app
 var app = builder.Build();
 
-// Seed data in development environment
+
 if (app.Environment.IsDevelopment())
 {
     

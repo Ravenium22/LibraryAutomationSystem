@@ -107,13 +107,12 @@
             :lg="4"
             class="book-grid-item"
           >
-            <el-card class="book-card" shadow="hover" @click="viewBookDetail(book)">
+            <el-card class="book-card" @click="viewBookDetail(book)">
               <div class="book-cover-container">
                 <el-image
                   :src="book.kapakUrl || '/default-book-cover.jpg'"
                   :alt="book.baslik"
                   class="book-cover"
-                  fit="cover"
                   :preview-src-list="book.kapakUrl ? [book.kapakUrl] : []"
                 >
                   <template #error>
@@ -360,7 +359,7 @@ export default {
       pageSize: 24,
       
       // Detay Dialog
-      detailDialogVisible: false,
+     detailDialogVisible: false,
       selectedBook: null
     }
   },
