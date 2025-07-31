@@ -10,33 +10,36 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
-      meta: { requiresGuest: true } // Giriş yapmamış kullanıcılar için
+      meta: { requiresGuest: true }
     },
     {
       path: '/',
       name: 'dashboard',
       component: DashboardView,
-      meta: { requiresAuth: true } // Giriş yapmış kullanıcılar için
+      meta: { requiresAuth: true }
     },
     { 
       path: '/kitaplar',
       name: 'kitaplar',
       component: () => import('../views/KitapView.vue'),
-      meta: { requiresAuth: true } // Giriş yapmış kullanıcılar için
+      meta: { requiresAuth: true }
     },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/RegisterView.vue'),
+      meta: { requiresGuest: true }
+    }
 
   ]
 })
 
-// Route guard - sayfa geçişlerini kontrol et
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {
-    // Giriş yapmamış kullanıcıyı login'e yönlendir
     next('/login')
   } else if (to.meta.requiresGuest && authStore.isLoggedIn) {
-    // Giriş yapmış kullanıcıyı dashboard'a yönlendir
     next('/')
   } else {
     next()

@@ -3,6 +3,7 @@
     <div class="login-form">
       <h2>Kütüphane Girişi</h2>
       
+      <p>Lütfen giriş bilgilerinizi girin.</p>
       <form @submit.prevent="handleLogin">
         <div class="form-group">
           <label>Email:</label>
@@ -37,6 +38,9 @@
       <div v-if="successMessage" class="success-message">
         {{ successMessage }}
       </div>
+      <div v-if="!error && !successMessage" class="info-message">
+        Henüz hesabınız yok mu? <router-link to="/register">Kayıt Olun</router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -58,7 +62,6 @@ export default {
     }
   },
   setup() {
-    // Pinia store'u kullan
     const authStore = useAuthStore()
     return { authStore }
   },
@@ -74,14 +77,12 @@ export default {
           this.loginData.email, 
           this.loginData.password
         )
-        
+
         if (result.success) {
           this.successMessage = 'Giriş başarılı! Yönlendiriliyorsunuz...'
-          
-          // 1 saniye sonra ana sayfaya yönlendir
           setTimeout(() => {
             this.$router.push('/')
-          }, 1000)
+          }, 300)
         } else {
           this.error = result.message
         }
@@ -97,7 +98,6 @@ export default {
 </script>
 
 <style scoped>
-/* Önceki CSS kodları aynı */
 .login-container {
   display: flex;
   justify-content: center;
@@ -163,5 +163,10 @@ button:disabled {
   padding: 0.5rem;
   background-color: #e8f5e8;
   border-radius: 4px;
+}
+
+.info-message {
+  margin-top: 1rem;
+  text-align: center;
 }
 </style>

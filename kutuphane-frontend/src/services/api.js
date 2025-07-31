@@ -9,7 +9,6 @@ const apiClient = axios.create({
   }
 })
 
-// Token varsa her istekte otomatik ekle
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
   if (token) {
@@ -29,6 +28,14 @@ export const authService = {
     return response.data
   },
 
+  // Token doğrula
+  async verifyToken(token) {
+    const response = await apiClient.post('/Auth/verify-token', {
+      token
+    })
+    return response.data
+  },
+
   // Kayıt ol
   async register(userData) {
     const response = await apiClient.post('/Auth/register', userData)
@@ -38,25 +45,21 @@ export const authService = {
 
 // Kitap servisleri
 export const kitapService = {
-  // Tüm kitapları getir
   async getAll() {
     const response = await apiClient.get('/Kitap')
     return response.data
   },
 
-  // ID'ye göre kitap getir
   async getById(id) {
     const response = await apiClient.get(`/Kitap/${id}`)
     return response.data
   },
 
-  // Yeni kitap oluştur (Admin)
   async create(kitapData) {
     const response = await apiClient.post('/Kitap/admin/create-kitap', kitapData)
     return response.data
   },
 
-  // Kitap güncelle (Admin)
   async update(id, kitapData) {
     const response = await apiClient.put(`/Kitap/admin/update-kitap/${id}`, kitapData)
     return response.data

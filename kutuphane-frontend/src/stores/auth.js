@@ -1,34 +1,27 @@
-// src/stores/auth.js
 import { defineStore } from 'pinia'
 import { authService } from '@/services/api'
 
 export const useAuthStore = defineStore('auth', {
-  // State (veriler)
   state: () => ({
-    user: null,           // Giriş yapan kullanıcı bilgileri
+    user: null,           
     token: localStorage.getItem('token') || null,
     isAuthenticated: false
   }),
 
-  // Getters (hesaplanmış değerler)
+  
   getters: {
-    // Kullanıcı giriş yapmış mı?
     isLoggedIn: (state) => !!state.token && !!state.user
   },
 
-  // Actions (fonksiyonlar)
   actions: {
-    // Giriş yap
     async login(email, password) {
       try {
         const response = await authService.login(email, password)
         
-        // Token'ı kaydet
         this.token = response.token
-        this.user = response.user || { email } // API'den user bilgisi gelirse kullan
+        this.user = response.user || { email } 
         this.isAuthenticated = true
         
-        // Local storage'a kaydet
         localStorage.setItem('token', response.token)
         
         return { success: true }
@@ -41,7 +34,35 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    // Çıkış yap
+    // Kayıt ol
+    async register(ad, soyad, email, password, dogumTarihi, telefon) {
+      try {
+        const response = await authService.register({
+          ad,
+          soyad,
+          email,
+          password,
+          dogumTarihi,
+          telefon
+        })
+        
+        if (response.token) {
+          this.token = response.token
+          this.user = response.user || { email, ad, soyad }
+          this.isAuthenticated = true
+          localStorage.setItem('token', response.token)
+        }
+        
+        return { success: true }
+      } catch (error) {
+        console.error('Register error:', error)
+        return { 
+          success: false, 
+          message: error.response?.data?.message || 'Kayıt olurken hata oluştu' 
+        }
+      }
+    },
+
     logout() {
       this.user = null
       this.token = null
@@ -54,7 +75,14 @@ export const useAuthStore = defineStore('auth', {
       if (token) {
         this.token = token
         this.isAuthenticated = true
-        // Burada token'ın geçerli olup olmadığını da kontrol edebiliriz
+        
+        authService.verifyToken(token)
+          .then(response => {
+            this.user = response.user || { email: '' } 
+          })
+          .catch(() => {
+            this.logout() 
+          }) 
       }
     }
   }

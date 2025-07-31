@@ -1,29 +1,33 @@
 <template>
   <div class="kitap-page">
-    <!-- Loading Durumu -->
     <div v-if="loading" class="loading-container">
       <el-skeleton :rows="5" animated />
     </div>
 
-    <!-- Ana İçerik -->
     <div v-else>
-      <!-- Sayfa Header -->
       <div class="page-header">
         <div class="header-left">
           <h1>Kitap Kataloğu</h1>
           <p>Kütüphanedeki kitapları keşfedin</p>
         </div>
         <div class="header-actions">
-          <el-button :icon="Grid" :type="viewMode === 'grid' ? 'primary' : ''" @click="viewMode = 'grid'">
+          <el-button 
+            :icon="Grid" 
+            :type="viewMode === 'grid' ? 'primary' : ''" 
+            @click="viewMode = 'grid'"
+          >
             Izgara
           </el-button>
-          <el-button :icon="List" :type="viewMode === 'list' ? 'primary' : ''" @click="viewMode = 'list'">
+          <el-button 
+            :icon="List" 
+            :type="viewMode === 'list' ? 'primary' : ''" 
+            @click="viewMode = 'list'"
+          >
             Liste
           </el-button>
         </div>
       </div>
 
-      <!-- Filtreler -->
       <el-card class="filter-card">
         <el-row :gutter="20">
           <el-col :xs="24" :md="8">
@@ -36,7 +40,12 @@
             />
           </el-col>
           <el-col :xs="24" :md="6">
-            <el-select v-model="filterCategory" placeholder="Kategori" clearable @change="filterBooks">
+            <el-select 
+              v-model="filterCategory" 
+              placeholder="Kategori" 
+              clearable 
+              @change="filterBooks"
+            >
               <el-option label="Tüm Kategoriler" value="" />
               <el-option 
                 v-for="category in categories" 
@@ -47,7 +56,12 @@
             </el-select>
           </el-col>
           <el-col :xs="24" :md="6">
-            <el-select v-model="filterStatus" placeholder="Durum" clearable @change="filterBooks">
+            <el-select 
+              v-model="filterStatus" 
+              placeholder="Durum" 
+              clearable 
+              @change="filterBooks"
+            >
               <el-option label="Tümü" value="" />
               <el-option label="Müsait" value="musait" />
               <el-option label="Ödünçte" value="mesgul" />
@@ -59,7 +73,6 @@
         </el-row>
       </el-card>
 
-      <!-- İstatistik Kartları -->
       <el-row :gutter="20" class="stats-row">
         <el-col :xs="12" :md="6">
           <el-card class="stat-card">
@@ -95,7 +108,6 @@
         </el-col>
       </el-row>
 
-      <!-- Grid Görünümü -->
       <div v-if="viewMode === 'grid'">
         <el-row :gutter="20">
           <el-col 
@@ -109,21 +121,26 @@
           >
             <el-card class="book-card" @click="viewBookDetail(book)">
               <div class="book-cover-container">
-                <el-image
-                  :src="book.kapakUrl || '/default-book-cover.jpg'"
-                  :alt="book.baslik"
-                  class="book-cover"
-                  :preview-src-list="book.kapakUrl ? [book.kapakUrl] : []"
-                >
-                  <template #error>
-                    <div class="image-slot">
-                      <el-icon class="image-icon"><Picture /></el-icon>
-                      <p>Kapak Yok</p>
-                    </div>
-                  </template>
-                </el-image>
+                <div class="book-cover-wrapper" @click.stop="previewImage(book)">
+                  <el-image
+                    :src="book.kapakUrl || '/default-book-cover.jpg'"
+                    :alt="book.baslik"
+                    class="book-cover"
+                    fit="cover"
+                    :hide-on-click-modal="true"
+                    :preview-teleported="true"
+                  >
+                    <template #error>
+                      <div class="image-slot">
+                        <el-icon class="image-icon">
+                          <Picture />
+                        </el-icon>
+                        <p>Kapak Yok</p>
+                      </div>
+                    </template>
+                  </el-image>
+                </div>
                 
-                <!-- Durum Badge -->
                 <div class="status-badge">
                   <el-tag 
                     :type="book.musaitMi ? 'success' : 'danger'" 
@@ -134,17 +151,15 @@
                   </el-tag>
                 </div>
               </div>
-              
+
               <div class="book-info">
                 <h3 class="book-title" :title="book.baslik">{{ book.baslik }}</h3>
                 <p class="book-author">{{ book.yazarAdi || 'Bilinmeyen Yazar' }}</p>
                 <p class="book-category">{{ book.kategoriAdi || 'Kategori Yok' }}</p>
-                
                 <div class="book-meta">
                   <span class="isbn">ISBN: {{ book.isbn }}</span>
                   <span class="location">{{ book.konum }}-{{ book.rafNo }}</span>
                 </div>
-                
                 <div class="book-stock">
                   <el-progress 
                     :percentage="(book.musaitStok / book.toplamStok) * 100"
@@ -160,7 +175,6 @@
         </el-row>
       </div>
 
-      <!-- Liste Görünümü -->
       <el-card v-else class="table-card">
         <template #header>
           <div class="card-header">
@@ -178,21 +192,24 @@
           @row-click="viewBookDetail"
           v-loading="tableLoading"
         >
-          <!-- Kapak Resmi -->
           <el-table-column label="Kapak" width="80">
             <template #default="scope">
-              <el-image
-                :src="scope.row.kapakUrl || '/default-book-cover.jpg'"
-                :alt="scope.row.baslik"
-                style="width: 50px; height: 70px; border-radius: 4px;"
-                fit="cover"
-              >
-                <template #error>
-                  <div class="table-image-slot">
-                    <el-icon><Picture /></el-icon>
-                  </div>
-                </template>
-              </el-image>
+              <div class="table-image-container" @click.stop="previewImage(scope.row)">
+                <el-image
+                  :src="scope.row.kapakUrl || '/default-book-cover.jpg'"
+                  :alt="scope.row.baslik"
+                  style="width: 50px; height: 70px; border-radius: 4px; cursor: pointer;"
+                  fit="cover"
+                  :hide-on-click-modal="true"
+                  :preview-teleported="true"
+                >
+                  <template #error>
+                    <div class="table-image-slot">
+                      <el-icon><Picture /></el-icon>
+                    </div>
+                  </template>
+                </el-image>
+              </div>
             </template>
           </el-table-column>
 
@@ -273,42 +290,62 @@
       <div v-if="selectedBook" class="book-detail">
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-image
-              :src="selectedBook.kapakUrl || '/default-book-cover.jpg'"
-              :alt="selectedBook.baslik"
-              style="width: 100%; border-radius: 8px;"
-              fit="cover"
-            >
-              <template #error>
-                <div class="detail-image-slot">
-                  <el-icon class="detail-image-icon"><Picture /></el-icon>
-                  <p>Kapak Resmi Yok</p>
-                </div>
-              </template>
-            </el-image>
+            <div class="detail-image-container" @click="previewImage(selectedBook)">
+              <el-image
+                :src="selectedBook.kapakUrl || '/default-book-cover.jpg'"
+                :alt="selectedBook.baslik"
+                style="width: 100%; border-radius: 8px; cursor: pointer;"
+                fit="cover"
+                :hide-on-click-modal="true"
+                :preview-teleported="true"
+              >
+                <template #error>
+                  <div class="detail-image-slot">
+                    <el-icon class="detail-image-icon">
+                      <Picture />
+                    </el-icon>
+                    <p>Kapak Resmi Yok</p>
+                  </div>
+                </template>
+              </el-image>
+            </div>
           </el-col>
           <el-col :span="16">
             <el-descriptions :column="1" border>
-              <el-descriptions-item label="Kitap Adı">{{ selectedBook.baslik }}</el-descriptions-item>
-              <el-descriptions-item label="Yazar">{{ selectedBook.yazarAdi || 'Bilinmeyen' }}</el-descriptions-item>
-              <el-descriptions-item label="Kategori">{{ selectedBook.kategoriAdi || 'Kategori Yok' }}</el-descriptions-item>
-              <el-descriptions-item label="ISBN">{{ selectedBook.isbn }}</el-descriptions-item>
-              <el-descriptions-item label="Sayfa Sayısı">{{ selectedBook.sayfaSayisi || '-' }}</el-descriptions-item>
+              <el-descriptions-item label="Kitap Adı">
+                {{ selectedBook.baslik }}
+              </el-descriptions-item>
+              <el-descriptions-item label="Yazar">
+                {{ selectedBook.yazarAdi || 'Bilinmeyen' }}
+              </el-descriptions-item>
+              <el-descriptions-item label="Kategori">
+                {{ selectedBook.kategoriAdi || 'Kategori Yok' }}
+              </el-descriptions-item>
+              <el-descriptions-item label="ISBN">
+                {{ selectedBook.isbn }}
+              </el-descriptions-item>
+              <el-descriptions-item label="Sayfa Sayısı">
+                {{ selectedBook.sayfaSayisi || '-' }}
+              </el-descriptions-item>
               <el-descriptions-item label="Yayın Tarihi">
                 {{ selectedBook.yayinTarihi ? new Date(selectedBook.yayinTarihi).toLocaleDateString('tr-TR') : '-' }}
               </el-descriptions-item>
-              <el-descriptions-item label="Konum">{{ selectedBook.konum }}-{{ selectedBook.rafNo }}</el-descriptions-item>
+              <el-descriptions-item label="Konum">
+                {{ selectedBook.konum }}-{{ selectedBook.rafNo }}
+              </el-descriptions-item>
               <el-descriptions-item label="Stok Durumu">
                 <el-tag :type="getStockTagType(selectedBook.stokDurumu)">
                   {{ selectedBook.stokDurumu }}
                 </el-tag>
-                <span style="margin-left: 8px;">({{ selectedBook.musaitStok }}/{{ selectedBook.toplamStok }})</span>
+                <span style="margin-left: 8px;">
+                  ({{ selectedBook.musaitStok }}/{{ selectedBook.toplamStok }})
+                </span>
               </el-descriptions-item>
             </el-descriptions>
           </el-col>
         </el-row>
       </div>
-      
+
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="detailDialogVisible = false">Kapat</el-button>
@@ -321,6 +358,33 @@
           </el-button>
         </span>
       </template>
+    </el-dialog>
+
+    <!-- Image Preview Dialog -->
+    <el-dialog
+      v-model="imagePreviewVisible"
+      title="Kitap Kapağı"
+      width="500px"
+      :show-close="true"
+      center
+    >
+      <div class="image-preview-container">
+        <el-image
+          :src="previewImageUrl"
+          :alt="previewImageAlt"
+          style="width: 100%; max-height: 600px;"
+          fit="contain"
+        >
+          <template #error>
+            <div class="preview-error-slot">
+              <el-icon class="preview-error-icon">
+                <Picture />
+              </el-icon>
+              <p>Resim yüklenemedi</p>
+            </div>
+          </template>
+        </el-image>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -335,35 +399,35 @@ export default {
   components: {
     Search, Refresh, View, Grid, List, Picture
   },
-  
   data() {
     return {
-      // Veriler
+      
       kitaplar: [],
       yazarlar: [],
       categories: [],
       filteredBooks: [],
       loading: false,
       tableLoading: false,
+
       
-      // Görünüm modu
-      viewMode: 'grid', // 'grid' veya 'list'
+      viewMode: 'grid', 
+
       
-      // Filtreler
       searchText: '',
       filterCategory: '',
       filterStatus: '',
-      
-      // Pagination
+
       currentPage: 1,
       pageSize: 24,
-      
-      // Detay Dialog
-     detailDialogVisible: false,
-      selectedBook: null
+
+      detailDialogVisible: false,
+      selectedBook: null,
+
+      imagePreviewVisible: false,
+      previewImageUrl: '',
+      previewImageAlt: ''
     }
   },
-
   computed: {
     totalBooks() {
       return this.kitaplar.length
@@ -380,7 +444,6 @@ export default {
       return this.filteredBooks.slice(start, end)
     }
   },
-
   async created() {
     this.loading = true
     try {
@@ -389,19 +452,17 @@ export default {
         this.loadYazarlar(),
         this.loadCategories()
       ])
-      
       // Then load books and combine with author data
       await this.loadKitaplar()
     } finally {
       this.loading = false
     }
   },
-
   methods: {
     async loadKitaplar() {
       try {
         const response = await apiClient.get('/Kitap')
-        this.kitaplar = this.combineBookAndAuthorData(response.data)
+        this.kitaplar = this.combineBookData(response.data)
         this.filteredBooks = [...this.kitaplar]
       } catch (error) {
         this.$message.error('Kitaplar yüklenirken hata oluştu')
@@ -416,12 +477,14 @@ export default {
       }
     },
 
-    combineBookAndAuthorData(books) {
+    combineBookData(books) {
       return books.map(book => {
         const yazar = this.yazarlar.find(y => y.id === book.yazarId)
+        const kategori = this.categories.find(k => k.id === book.kategoriId)
         return {
           ...book,
-          yazarAdi: yazar ? `${yazar.ad} ${yazar.soyad}`.trim() : 'Bilinmeyen Yazar'
+          yazarAdi: yazar ? `${yazar.ad} ${yazar.soyad}`.trim() : 'Bilinmeyen Yazar',
+          kategoriAdi: kategori ? kategori.ad : 'Kategori Yok'
         }
       })
     },
@@ -449,7 +512,7 @@ export default {
 
     filterBooks() {
       let filtered = [...this.kitaplar]
-      
+
       // Metin arama
       if (this.searchText) {
         const search = this.searchText.toLowerCase()
@@ -459,19 +522,19 @@ export default {
           (book.yazarAdi && book.yazarAdi.toLowerCase().includes(search))
         )
       }
-      
+
       // Kategori filtresi
       if (this.filterCategory) {
         filtered = filtered.filter(book => book.kategoriId === this.filterCategory)
       }
-      
+
       // Durum filtresi
       if (this.filterStatus === 'musait') {
         filtered = filtered.filter(book => book.musaitMi)
       } else if (this.filterStatus === 'mesgul') {
         filtered = filtered.filter(book => !book.musaitMi)
       }
-      
+
       this.filteredBooks = filtered
       this.currentPage = 1
     },
@@ -505,8 +568,15 @@ export default {
       this.detailDialogVisible = true
     },
 
+    previewImage(book) {
+      if (book.kapakUrl) {
+        this.previewImageUrl = book.kapakUrl
+        this.previewImageAlt = book.baslik
+        this.imagePreviewVisible = true
+      }
+    },
+
     requestLoan() {
-      // Ödünç alma işlemi - başka bir sayfaya yönlendirilebir
       this.$message.info('Ödünç alma işlemi geliştirilecek')
       this.detailDialogVisible = false
     },
@@ -610,6 +680,10 @@ export default {
   margin-bottom: 16px;
 }
 
+.book-cover-wrapper {
+  cursor: pointer;
+}
+
 .book-cover {
   width: 100%;
   height: 240px;
@@ -670,10 +744,17 @@ export default {
 
 .book-meta {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 4px;
   font-size: 11px;
   color: #9ca3af;
   margin-bottom: 12px;
+}
+
+.book-meta .isbn,
+.book-meta .location {
+  word-break: break-all;
+  line-height: 1.3;
 }
 
 .book-stock {
@@ -688,7 +769,6 @@ export default {
   margin-top: 4px;
 }
 
-/* Liste Görünümü */
 .table-card {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
@@ -702,6 +782,10 @@ export default {
 .header-actions {
   display: flex;
   gap: 8px;
+}
+
+.table-image-container {
+  cursor: pointer;
 }
 
 .table-image-slot {
@@ -759,6 +843,10 @@ export default {
   padding: 16px 0;
 }
 
+.detail-image-container {
+  cursor: pointer;
+}
+
 .detail-image-slot {
   display: flex;
   flex-direction: column;
@@ -781,27 +869,46 @@ export default {
   gap: 12px;
 }
 
-/* Responsive */
+.image-preview-container {
+  text-align: center;
+}
+
+.preview-error-slot {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  background-color: #f5f7fa;
+  color: #909399;
+  border-radius: 8px;
+}
+
+.preview-error-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
 @media (max-width: 768px) {
   .kitap-page {
     padding: 16px;
   }
-  
+
   .page-header {
     flex-direction: column;
     gap: 16px;
     text-align: center;
   }
-  
+
   .header-actions {
     width: 100%;
     justify-content: center;
   }
-  
+
   .book-cover {
     height: 200px;
   }
-  
+
   .image-slot {
     height: 200px;
   }
