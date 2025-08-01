@@ -28,14 +28,6 @@ export const authService = {
     return response.data
   },
 
-  // Token doğrula
-  async verifyToken(token) {
-    const response = await apiClient.post('/Auth/verify-token', {
-      token
-    })
-    return response.data
-  },
-
   // Kayıt ol
   async register(userData) {
     const response = await apiClient.post('/Auth/register', userData)
@@ -89,6 +81,18 @@ export const kitapService = {
       params: searchParams
     })
     return response.data
+  },
+
+  // Stok biten kitaplar (Admin)
+  async getStokBiten() {
+    const response = await apiClient.get('/Kitap/admin/stok-biten')
+    return response.data
+  },
+
+  // Stok yakın biten kitaplar (Admin)
+  async getStokYakinBiten() {
+    const response = await apiClient.get('/Kitap/admin/stok-yakin-biten')
+    return response.data
   }
 
 }
@@ -123,6 +127,26 @@ export const yazarService = {
   async delete(id) {
     const response = await apiClient.delete(`/Yazar/admin/delete-yazar/${id}`)
     return response.data
+  },
+
+  // Yazarları kitaplarıyla birlikte getir
+  async getWithBooks() {
+    const response = await apiClient.get('/Yazar/with-kitaplar')
+    return response.data
+  },
+
+  // Ülkeye göre yazar getir
+  async getByCountry(ulke) {
+    const response = await apiClient.get(`/Yazar/ulke/${ulke}`)
+    return response.data
+  },
+
+  // Yazar ara
+  async search(searchParams) {
+    const response = await apiClient.get('/Yazar/search', {
+      params: searchParams
+    })
+    return response.data
   }
 }
 
@@ -137,6 +161,36 @@ export const kategoriService = {
   // ID'ye göre kategori getir
   async getById(id) {
     const response = await apiClient.get(`/Kategori/${id}`)
+    return response.data
+  },
+
+  // Yeni kategori oluştur (Admin)
+  async create(kategoriData) {
+    const response = await apiClient.post('/Kategori/admin/create-kategori', kategoriData)
+    return response.data
+  },
+
+  // Kategori güncelle (Admin)
+  async update(id, kategoriData) {
+    const response = await apiClient.put(`/Kategori/admin/update-kategori/${id}`, kategoriData)
+    return response.data
+  },
+
+  // Kategori sil (Admin)
+  async delete(id) {
+    const response = await apiClient.delete(`/Kategori/admin/delete-kategori/${id}`)
+    return response.data
+  },
+
+  // Kategorileri kitaplarıyla birlikte getir
+  async getWithBooks() {
+    const response = await apiClient.get('/Kategori/with-kitaplar')
+    return response.data
+  },
+
+  // İsme göre kategori getir
+  async getByName(name) {
+    const response = await apiClient.get(`/Kategori/name/${name}`)
     return response.data
   }
 }
@@ -172,6 +226,127 @@ export const dashboardService = {
   // Admin - finansal verileri getir (requires authentication)
   async getFinancialData() {
     const response = await apiClient.get('/Dashboard/admin/financial')
+    return response.data
+  }
+
+}
+
+// Kullanici servisleri
+export const kullaniciService = {
+  // Tüm kullanıcıları getir
+  async getAll() {
+    const response = await apiClient.get('/Kullanici')
+    return response.data
+  },
+
+  // ID'ye göre kullanıcı getir
+  async getById(id) {
+    const response = await apiClient.get(`/Kullanici/${id}`)
+    return response.data
+  },
+
+  // Yeni kullanıcı oluştur (Admin)
+  async create(kullaniciData) {
+    const response = await apiClient.post('/Kullanici/admin/create-kullanici', kullaniciData)
+    return response.data
+  },
+
+  // Kullanıcı güncelle (Admin)
+  async update(id, kullaniciData) {
+    const response = await apiClient.put(`/Kullanici/admin/update-kullanici/${id}`, kullaniciData)
+    return response.data
+  },
+
+  // Kullanıcı sil (Admin)
+  async delete(id) {
+    const response = await apiClient.delete(`/Kullanici/admin/delete-kullanici/${id}`)
+    return response.data
+  },
+
+  // Kullanıcıları ödünçleriyle birlikte getir
+  async getWithOduncler() {
+    const response = await apiClient.get('/Kullanici/with-oduncler')
+    return response.data
+  },
+
+  // Aktif kullanıcıları getir
+  async getAktif() {
+    const response = await apiClient.get('/Kullanici/aktif')
+    return response.data
+  }
+}
+
+// Odunc servisleri
+export const oduncService = {
+  // Tüm ödünçleri getir
+  async getAll() {
+    const response = await apiClient.get('/Odunc')
+    return response.data
+  },
+
+  // ID'ye göre ödünç getir
+  async getById(id) {
+    const response = await apiClient.get(`/Odunc/${id}`)
+    return response.data
+  },
+
+  // Yeni ödünç oluştur (Admin)
+  async create(oduncData) {
+    const response = await apiClient.post('/Odunc/admin/create-odunc', oduncData)
+    return response.data
+  },
+
+  // Ödünç güncelle (Admin)
+  async update(id, oduncData) {
+    const response = await apiClient.put(`/Odunc/admin/update-odunc/${id}`, oduncData)
+    return response.data
+  },
+
+  // Ödünç sil (Admin)
+  async delete(id) {
+    const response = await apiClient.delete(`/Odunc/admin/delete-odunc/${id}`)
+    return response.data
+  },
+
+  // Aktif ödünçleri getir
+  async getAktif() {
+    const response = await apiClient.get('/Odunc/aktif')
+    return response.data
+  },
+
+  // Süresi dolan ödünçleri getir
+  async getSuresiDolan() {
+    const response = await apiClient.get('/Odunc/suresi-dolan')
+    return response.data
+  },
+
+  // Kullanıcının ödünçlerini getir
+  async getByKullanici(kullaniciId) {
+    const response = await apiClient.get(`/Odunc/kullanici/${kullaniciId}`)
+    return response.data
+  },
+
+  // Kitabın ödünç geçmişini getir
+  async getKitapGecmis(kitapId) {
+    const response = await apiClient.get(`/Odunc/kitap/${kitapId}/gecmis`)
+    return response.data
+  },
+
+  // Borç raporu getir (Admin)
+  async getBorcRaporu() {
+    const response = await apiClient.get('/Odunc/admin/borç-raporu')
+    return response.data
+  },
+
+  // Kitap iade et (Admin)
+  async iade(id) {
+    const response = await apiClient.post(`/Odunc/admin/${id}/iade`)
+    return response.data
+  },
+
+  // Ödünç ver (Admin)
+  async oduncVer(oduncData) {
+    const response = await apiClient.post('/Odunc/admin/odunc-ver', oduncData)
     return response.data
   }
 }

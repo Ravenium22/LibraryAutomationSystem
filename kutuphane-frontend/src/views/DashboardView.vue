@@ -39,7 +39,7 @@
       <el-col :xs="24" :sm="12" :md="6">
         <el-card class="stat-card">
           <div class="stat-content">
-            <el-icon class="stat-icon" color="#67C23A"><User /></el-icon>
+            <el-icon class="stat-icon" color="#67C23A"><Collection /></el-icon>
             <div class="stat-info">
               <h3>{{ stats.totalCategories || 0 }}</h3>
               <p>Toplam Kategori</p>
@@ -63,7 +63,7 @@
       <el-col :xs="24" :sm="12" :md="6">
         <el-card class="stat-card">
           <div class="stat-content">
-            <el-icon class="stat-icon" color="#F56C6C"><Warning /></el-icon>
+            <el-icon class="stat-icon" color="#F56C6C"><User /></el-icon>
             <div class="stat-info">
               <h3>{{ stats.totalAuthors || 0 }}</h3>
               <p>Toplam Yazar</p>
@@ -81,7 +81,7 @@
           <template #header>
             <div class="card-header">
               <span>Popüler Kitaplar</span>
-              <el-button type="text">Tümünü Gör</el-button>
+              <el-icon color="#409EFF"><Reading /></el-icon>
             </div>
           </template>
           
@@ -103,6 +103,7 @@
           </div>
         </el-card>
       </el-col>
+      
       <!-- Kullanıcı Geri Bildirimleri -->
       <el-col :xs="24" :md="8">
         <el-card class="testimonial-card">
@@ -173,26 +174,26 @@
       </el-col>
     </el-row>
 
-
-    <el-row :gutter="20" style="margin-top: 20px;" v-if="trends.length > 0">
+    <!-- Kategori Trendleri -->
+    <el-row :gutter="20" style="margin-top: 20px;" v-if="aggregatedTrends.length > 0">
       <el-col :span="24">
         <el-card>
           <template #header>
             <div class="card-header">
               <span>Kategori Trendleri</span>
-              <el-button type="text">Detayları Gör</el-button>
+              <el-icon color="#409EFF"><Collection /></el-icon>
             </div>
           </template>
           
           <div class="trends-container">
             <div 
-              v-for="trend in trends.slice(0, 6)" 
+              v-for="trend in aggregatedTrends.slice(0, 6)" 
               :key="trend.kategoriAdi"
               class="trend-item"
             >
               <div class="trend-header">
                 <strong>{{ trend.kategoriAdi }}</strong>
-                <small>{{ trend.ay }}</small>
+                <small>Son 12 ay</small>
               </div>
               <div class="trend-stats">
                 <span class="book-count">{{ trend.kitapSayisi }} kitap</span>
@@ -207,21 +208,19 @@
 </template>
 
 <script>
-import { Reading, User, RefreshRight, Warning, Plus, UserFilled, ChatDotSquare, ChatLineRound } from '@element-plus/icons-vue'
+import { 
+  Reading, 
+  User, 
+  RefreshRight, 
+  Warning, 
+  Collection,
+  ChatDotSquare, 
+  ChatLineRound 
+} from '@element-plus/icons-vue'
 import { dashboardService } from '@/services/api'
 
 export default {
   name: 'DashboardView',
-  components: {
-    Reading,
-    User,
-    RefreshRight,
-    Warning,
-    Plus,
-    UserFilled,
-    ChatDotSquare,
-    ChatLineRound
-  },
   data() {
     return {
       stats: {},
@@ -234,6 +233,30 @@ export default {
         user2: 5,
         user3: 4
       }
+    }
+  },
+  computed: {
+    // Aggregate trends by category to remove redundancy
+    aggregatedTrends() {
+      const categoryMap = new Map()
+      
+      this.trends.forEach(trend => {
+        const categoryName = trend.kategoriAdi
+        if (categoryMap.has(categoryName)) {
+          const existing = categoryMap.get(categoryName)
+          existing.kitapSayisi += trend.kitapSayisi
+          existing.oduncSayisi += trend.oduncSayisi
+        } else {
+          categoryMap.set(categoryName, {
+            kategoriAdi: categoryName,
+            kitapSayisi: trend.kitapSayisi,
+            oduncSayisi: trend.oduncSayisi
+          })
+        }
+      })
+      
+      return Array.from(categoryMap.values())
+        .sort((a, b) => b.oduncSayisi - a.oduncSayisi)
     }
   },
   async created() {
@@ -252,14 +275,14 @@ export default {
           totalCategories: statsResponse.toplamKategoriSayisi,
           totalAuthors: statsResponse.toplamYazarSayisi,
           availableBooks: statsResponse.musaitKitapSayisi,
-          activeLoans: statsResponse.toplamKitapSayisi - statsResponse.musaitKitapSayisi, // Aktif ödünç = toplam - müsait
-          overdueBooks: 0 // Bu veri API'de yok, varsayılan 0
+          activeLoans: statsResponse.toplamKitapSayisi - statsResponse.musaitKitapSayisi,
+          overdueBooks: 0
         }
 
         // Popüler kitapları al
         const popularBooksResponse = await dashboardService.getPopularBooks(5)
         this.popularBooks = popularBooksResponse.map(book => ({
-          id: book.kitapAdi, // Unique identifier olarak kullanıyoruz
+          id: book.kitapAdi,
           title: book.kitapAdi,
           author: book.yazarAdi,
           loanCount: book.oduncSayisi,
@@ -278,6 +301,17 @@ export default {
       } finally {
         this.isLoading = false
       }
+    }
+  },
+  setup() {
+    return {
+      Reading,
+      User,
+      RefreshRight,
+      Warning,
+      Collection,
+      ChatDotSquare,
+      ChatLineRound
     }
   }
 }

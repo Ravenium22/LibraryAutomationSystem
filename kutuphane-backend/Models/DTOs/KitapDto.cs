@@ -45,6 +45,7 @@ namespace Kutuphane.Models.DTOs
         public int SayfaSayisi { get; set; }
         public bool MusaitMi { get; set; }
         public int YazarId { get; set; }
+        public string YazarAdi { get; set; } = string.Empty;
         public int KategoriId { get; set; }
         public string Konum { get; set; } = string.Empty;
         public string RafNo { get; set; } = string.Empty;

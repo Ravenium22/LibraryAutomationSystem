@@ -29,8 +29,45 @@ const router = createRouter({
       name: 'register',
       component: () => import('../views/RegisterView.vue'),
       meta: { requiresGuest: true }
-    }
+    },
+    {
+      path: '/kategoriler',
+      name: 'kategoriler',
+      component: () => import('../views/KategoriView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/odunc',
+      name: 'odunc',
+      component: () => import('../views/OduncView.vue'),
+      meta: { requiresAuth: true }
+    
+    },
+    {
+      path: '/yazarlar',
+      name: 'yazarlar',
+      component: () => import('../views/YazarlarView.vue'),
+      meta: { requiresAuth: true }
+    },
 
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../views/AdminView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+    path: '/admin/overdue-books',
+    name: 'admin-overdue-books',
+    component: () => import('@/views/OverdueView.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
+{
+  path: '/admin/all-loans',
+  name: 'admin-all-loans', 
+  component: () => import('@/views/AllLoansView.vue'),
+  meta: { requiresAuth: true, requiresAdmin: true }
+}
   ]
 })
 

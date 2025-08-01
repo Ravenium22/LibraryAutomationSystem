@@ -17,12 +17,18 @@ namespace Kutuphane.Repositories
 
         public async Task<IEnumerable<Kitap>> GetAllAsync()
         {
-            return await _context.Kitaplar.ToListAsync();
+            return await _context.Kitaplar
+                .Include(k => k.Yazar)
+                .Include(k => k.Kategori)
+                .ToListAsync();
         }
 
         public async Task<Kitap?> GetByIdAsync(int id)
         {
-            return await _context.Kitaplar.FindAsync(id);
+            return await _context.Kitaplar
+                .Include(k => k.Yazar)
+                .Include(k => k.Kategori)
+                .FirstOrDefaultAsync(k => k.Id == id);
         }
 
         public async Task<Kitap> AddAsync(Kitap entity)

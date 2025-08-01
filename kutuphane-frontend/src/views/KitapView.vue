@@ -79,6 +79,8 @@
             <div class="stat-content">
               <div class="stat-number">{{ totalBooks }}</div>
               <div class="stat-label">Toplam Kitap</div>
+              <ElIcon class="stat-icon" color="#409EFF" size="50"><Reading />
+              </ElIcon>
             </div>
           </el-card>
         </el-col>
@@ -87,6 +89,7 @@
             <div class="stat-content">
               <div class="stat-number available">{{ availableBooks }}</div>
               <div class="stat-label">Müsait Kitap</div>
+              <ElIcon class="stat-icon" color="#67C23A" size="50"><User /></ElIcon>
             </div>
           </el-card>
         </el-col>
@@ -95,6 +98,7 @@
             <div class="stat-content">
               <div class="stat-number busy">{{ busyBooks }}</div>
               <div class="stat-label">Ödünçte</div>
+              <ElIcon class="stat-icon" color="#E6A23C" size="50"><UserFilled /></ElIcon>
             </div>
           </el-card>
         </el-col>
@@ -103,6 +107,7 @@
             <div class="stat-content">
               <div class="stat-number warning">{{ categories.length }}</div>
               <div class="stat-label">Kategori</div>
+              <ElIcon class="stat-icon" color="#F56C6C" size="50"><Collection /></ElIcon>
             </div>
           </el-card>
         </el-col>
@@ -349,13 +354,6 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="detailDialogVisible = false">Kapat</el-button>
-          <el-button 
-            v-if="selectedBook?.musaitMi" 
-            type="primary" 
-            @click="requestLoan"
-          >
-            Ödünç Al
-          </el-button>
         </span>
       </template>
     </el-dialog>
@@ -393,6 +391,7 @@
 import { Search, Refresh, View, Grid, List, Picture } from '@element-plus/icons-vue'
 import { yazarService, kategoriService } from '@/services/api'
 import apiClient from '@/services/api'
+import { ElIcon } from 'element-plus'
 
 export default {
   name: 'KitapView',
@@ -454,6 +453,9 @@ export default {
       ])
       // Then load books and combine with author data
       await this.loadKitaplar()
+      
+      // Check for highlight query parameter
+      this.checkHighlightBook()
     } finally {
       this.loading = false
     }
@@ -563,6 +565,23 @@ export default {
       return '#f56c6c'
     },
 
+    checkHighlightBook() {
+      const highlightId = this.$route.query.highlight
+      if (highlightId) {
+        const bookToHighlight = this.kitaplar.find(book => book.id == highlightId)
+        if (bookToHighlight) {
+          // Open the book detail dialog
+          this.viewBookDetail(bookToHighlight)
+          
+          // Remove the highlight query parameter to clean up URL
+          this.$router.replace({ 
+            name: 'kitaplar',
+            query: { ...this.$route.query, highlight: undefined }
+          })
+        }
+      }
+    },
+
     viewBookDetail(book) {
       this.selectedBook = book
       this.detailDialogVisible = true
@@ -574,11 +593,6 @@ export default {
         this.previewImageAlt = book.baslik
         this.imagePreviewVisible = true
       }
-    },
-
-    requestLoan() {
-      this.$message.info('Ödünç alma işlemi geliştirilecek')
-      this.detailDialogVisible = false
     },
 
     handleSizeChange(size) {

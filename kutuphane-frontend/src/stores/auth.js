@@ -19,7 +19,16 @@ export const useAuthStore = defineStore('auth', {
         const response = await authService.login(email, password)
         
         this.token = response.token
-        this.user = response.user || { email } 
+        
+        // Decode token to get user ID
+        const payload = JSON.parse(atob(response.token.split('.')[1]))
+        this.user = {
+          id: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload.nameid || payload.sub,
+          email: response.email,
+          ad: response.ad,
+          soyad: response.soyad,
+          role: response.role
+        }
         this.isAuthenticated = true
         
         localStorage.setItem('token', response.token)
@@ -46,14 +55,10 @@ export const useAuthStore = defineStore('auth', {
           telefon
         })
         
-        if (response.token) {
-          this.token = response.token
-          this.user = response.user || { email, ad, soyad }
-          this.isAuthenticated = true
-          localStorage.setItem('token', response.token)
+        return { 
+          success: response.success,
+          message: response.message
         }
-        
-        return { success: true }
       } catch (error) {
         console.error('Register error:', error)
         return { 
@@ -76,13 +81,18 @@ export const useAuthStore = defineStore('auth', {
         this.token = token
         this.isAuthenticated = true
         
-        authService.verifyToken(token)
-          .then(response => {
-            this.user = response.user || { email: '' } 
-          })
-          .catch(() => {
-            this.logout() 
-          }) 
+        // Decode JWT token to get user info (without server verification)
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]))
+          this.user = {
+            id: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload.nameid || payload.sub,
+            email: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || payload.email,
+            role: payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role
+          }
+        } catch (error) {
+          console.error('Invalid token format:', error)
+          this.logout()
+        }
       }
     }
   }

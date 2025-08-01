@@ -175,7 +175,8 @@ namespace Kutuphane.Repositories
                 {
                     KategoriAdi = g.Key.Ad,
                     Ay = $"{g.Key.Year}-{g.Key.Month:00}",
-                    OduncSayisi = g.Count()
+                    OduncSayisi = g.Count(),
+                    KitapSayisi = g.Select(x => x.Kitap.Id).Distinct().Count()
                 })
                 .OrderByDescending(t => t.OduncSayisi)
                 .ToListAsync();

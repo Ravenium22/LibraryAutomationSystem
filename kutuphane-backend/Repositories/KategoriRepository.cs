@@ -57,6 +57,7 @@ namespace Kutuphane.Repositories
         {
             return await _context.Kategoriler
                 .Include(k => k.Kitaplar)
+                    .ThenInclude(kitap => kitap.Yazar)
                 .ToListAsync();
         }
 

@@ -36,12 +36,7 @@
 
           <el-menu-item index="/kitaplar">
             <el-icon><Reading /></el-icon>
-            <span>Kitap Yönetimi</span>
-          </el-menu-item>
-
-          <el-menu-item index="/kullanicilar">
-            <el-icon><User /></el-icon>
-            <span>Kullanıcı Yönetimi</span>
+            <span>Kitaplar</span>
           </el-menu-item>
 
           <el-menu-item index="/odunc">
@@ -51,12 +46,12 @@
 
           <el-menu-item index="/kategoriler">
             <el-icon><Collection /></el-icon>
-            <span>Kategori Yönetimi</span>
+            <span>Kategoriler</span>
           </el-menu-item>
 
           <el-menu-item index="/yazarlar">
             <el-icon><EditPen /></el-icon>
-            <span>Yazar Yönetimi</span>
+            <span>Yazarlar</span>
           </el-menu-item>
         </el-menu>
       </el-aside>

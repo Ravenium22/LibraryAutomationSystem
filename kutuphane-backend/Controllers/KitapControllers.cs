@@ -47,6 +47,9 @@ namespace Kutuphane.Controllers
                     SayfaSayisi = k.SayfaSayisi,
                     MusaitMi = k.MusaitStok > 0,
                     YazarId = k.YazarId,
+                    YazarAdi = k.Yazar != null ? 
+                        (k.Yazar.Ad + " " + k.Yazar.Soyad).Trim() : 
+                        "Bilinmeyen Yazar",
                     KategoriId = k.KategoriId,
                     Konum = k.Konum,
                     RafNo = k.RafNo,
@@ -89,6 +92,9 @@ namespace Kutuphane.Controllers
                     SayfaSayisi = kitap.SayfaSayisi,
                     MusaitMi = kitap.MusaitStok > 0,
                     YazarId = kitap.YazarId,
+                    YazarAdi = kitap.Yazar != null ? 
+                        (kitap.Yazar.Ad + " " + kitap.Yazar.Soyad).Trim() : 
+                        "Bilinmeyen Yazar",
                     KategoriId = kitap.KategoriId,
                     Konum = kitap.Konum,
                     RafNo = kitap.RafNo,

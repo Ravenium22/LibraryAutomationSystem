@@ -187,6 +187,9 @@ namespace Kutuphane.Controllers
                         SayfaSayisi = kitap.SayfaSayisi,
                         MusaitMi = kitap.MusaitStok > 0,
                         YazarId = kitap.YazarId,
+                        YazarAdi = kitap.Yazar != null ? 
+                            (kitap.Yazar.Ad + " " + kitap.Yazar.Soyad).Trim() : 
+                            "Bilinmeyen Yazar",
                         MusaitStok = kitap.MusaitStok,
                         ToplamStok = kitap.ToplamStok,
                         KategoriId = kitap.KategoriId,
